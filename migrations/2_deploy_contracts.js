@@ -1,5 +1,5 @@
-var TestContract = artifacts.require("./TestContract.sol");
+var StatutoryVoting = artifacts.require("./StatutoryVoting.sol");
 
 module.exports = function(deployer) {
-    deployer.deploy(TestContract);
+    deployer.deploy(StatutoryVoting);
 };
