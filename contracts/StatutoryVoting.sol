@@ -3,7 +3,7 @@ pragma solidity ^0.4.23;
 import 'openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol';
 
 contract StatutoryVoting is StandardToken {
-    mapping(address => bool) transferBlocked;
+    mapping(address => uint[]) public currentlyVoted;
     Proposal[] public proposals;
     uint256 windowSize;
 
@@ -23,14 +23,9 @@ contract StatutoryVoting is StandardToken {
     }
 
     //Transfer Functionality
-    modifier validTransfer() {
-        require(!transferBlocked[msg.sender]);
-        _;
-    }
-
     function transfer(address _to, uint256 _value)
-        validTransfer()
     public returns (bool) {
+        require(currentlyVoted[msg.sender].length == 0);
         require(_to != address(0));
         require(_value <= balances[msg.sender]);
 
@@ -41,8 +36,8 @@ contract StatutoryVoting is StandardToken {
     }
 
     function transferFrom(address _from, address _to, uint256 _value)
-        validTransfer()
     public returns (bool) {
+        require(currentlyVoted[_from].length == 0);
         require(_to != address(0));
         require(_value <= balances[_from]);
         require(_value <= allowed[_from][msg.sender]);
@@ -55,7 +50,14 @@ contract StatutoryVoting is StandardToken {
     }
 
     function unblockTransfer() public {
-
+        for(uint i=0; i < currentlyVoted[msg.sender].length; i++){
+            Proposal storage p = proposals[i];
+            p.noTotal -= p.noVotesOf[msg.sender];
+            p.noVotesOf[msg.sender] = 0;
+            p.yesTotal -= p.yesVotesOf[msg.sender];
+            p.yesVotesOf[msg.sender] = 0;
+        }
+        delete currentlyVoted[msg.sender];
     }
 
     //Voting & Proposal Functionality
@@ -64,5 +66,41 @@ contract StatutoryVoting is StandardToken {
         _;
     }
 
+    function createProposal(address _target)
+    public returns(uint256){
+        uint256 _id = proposals.length++;
+        Proposal storage p = proposals[_id];
+        p.target = _target;
+        p.windowEnd = now + windowSize;
+        return _id;
+    }
 
+    function voteOnProposal(uint256 _id, bool _approve)
+        inVoteWindow(_id)
+    public {
+        Proposal storage p = proposals[_id];
+        if(_approve){
+            p.noTotal -= p.noVotesOf[msg.sender];
+            p.noVotesOf[msg.sender] = 0;
+            p.yesVotesOf[msg.sender] = balances[msg.sender];
+            p.yesTotal += balances[msg.sender];
+        } else {
+            p.yesTotal -= p.yesVotesOf[msg.sender];
+            p.yesVotesOf[msg.sender] = 0;
+            p.noVotesOf[msg.sender] = balances[msg.sender];
+            p.noTotal += balances[msg.sender];
+        }
+        p.isValid = p.yesTotal > p.noTotal;
+        currentlyVoted[msg.sender].push(_id);
+    }
+
+    function confirmProposal(uint256 _id) public {
+        Proposal storage p = proposals[_id];
+        require(now > p.windowEnd);
+        require(p.isValid);
+    }
+
+    function getCV() public view returns(uint[]){
+        return currentlyVoted[msg.sender];
+    }
 }
