@@ -1,11 +1,12 @@
-var StatutoryVoting = artifacts.require("./StatutoryVoting.sol");
+const shouldBehaveLikeStandardToken = require('./behaviors/StandardToken.js')
+var SVoting = artifacts.require("./StatutoryVoting.sol")
 const votingWindow = 4000
 const supply = 100000000
 
-console.log("Works")
-
 contract('Statutory Voting', function (accounts) {
   beforeEach(async function () {
-    this.svoting = await StatutoryVoting.new(votingWindow, supply);
+    this.token = await SVoting.new(votingWindow, supply, {from:accounts[0]});
   })
+  shouldBehaveLikeStandardToken(supply, accounts[0], accounts[1], accounts[2],
+    accounts[3]);
 })
