@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
 
-import './BasicVoting.sol';
+import "./BasicVoting.sol";
 
 contract DetailedVoting is BasicVoting {
     constructor(uint256 _window, uint256 _totalSupply) public {
