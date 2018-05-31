@@ -5,6 +5,7 @@
 ## About
 This is a generic smart contract structure for incorporating a democratic proposal system into ERC20 contracts. The proposal system is based on statutory voting, in which the number of voting rights is proportional to the balance of the individual or entity voting on a proposal. More information can be found [here](https://google.com).
 
+
 ## Dependencies
 NodeJS ([installation instruction](https://nodejs.org/en/download/))
 
