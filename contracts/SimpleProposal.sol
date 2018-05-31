@@ -1,8 +1,9 @@
 pragma solidity ^0.4.23;
 
-import "./BasicVoting.sol";
+import "./GenericProposal.sol";
 
-contract DetailedVoting is BasicVoting {
+contract SimpleProposal is GenericProposal {
+
     constructor(uint256 _window, uint256 _totalSupply) public {
         windowSize = _window;
         balances[msg.sender] = _totalSupply;
@@ -11,17 +12,17 @@ contract DetailedVoting is BasicVoting {
     event ProposalCreated(
         address indexed target,
         uint256 indexed windowEnd,
-        uint256 indexed id,
-        bytes32 detailsHash
+        uint256 indexed id
     );
 
-    function createProposal(address _target, bytes32 _hash)
+    function createProposal(address _target)
     public returns(uint256){
         uint256 _id = proposals.length++;
         Proposal storage p = proposals[_id];
         p.target = _target;
         p.windowEnd = now + windowSize;
-        emit ProposalCreated(_target, p.windowEnd, _id, _hash);
+        emit ProposalCreated(_target, p.windowEnd, _id);
         return _id;
     }
+
 }
