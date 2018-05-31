@@ -2,10 +2,11 @@ pragma solidity ^0.4.23;
 
 import 'openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol';
 
-contract StatutoryVoting is StandardToken {
+contract BasicVoting is StandardToken {
+    address public approvedTarget;
     mapping(address => uint[]) public currentlyVoted;
     Proposal[] public proposals;
-    uint256 windowSize;
+    uint256 public windowSize;
 
     struct Proposal {
         address target;
@@ -15,6 +16,7 @@ contract StatutoryVoting is StandardToken {
         uint noTotal;
         mapping(address => uint) yesVotesOf;
         mapping(address => uint) noVotesOf;
+        bool hasBeenApproved;
     }
 
     constructor(uint256 _window, uint256 _totalSupply) public {
@@ -66,12 +68,19 @@ contract StatutoryVoting is StandardToken {
         _;
     }
 
+    event ProposalCreated(
+        address indexed target,
+        uint256 indexed windowEnd,
+        uint256 indexed id
+    );
+
     function createProposal(address _target)
     public returns(uint256){
         uint256 _id = proposals.length++;
         Proposal storage p = proposals[_id];
         p.target = _target;
         p.windowEnd = now + windowSize;
+        emit ProposalCreated(_target, p.windowEnd, _id);
         return _id;
     }
 
@@ -98,9 +107,8 @@ contract StatutoryVoting is StandardToken {
         Proposal storage p = proposals[_id];
         require(now > p.windowEnd);
         require(p.isValid);
-    }
-
-    function getCV() public view returns(uint[]){
-        return currentlyVoted[msg.sender];
+        require(!p.hasBeenApproved);
+        approvedTarget = p.target;
+        p.hasBeenApproved = true;
     }
 }

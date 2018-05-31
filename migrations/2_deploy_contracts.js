@@ -1,7 +1,7 @@
-var StatutoryVoting = artifacts.require("./StatutoryVoting.sol");
+var BasicVoting = artifacts.require("./BasicVoting.sol");
 
 module.exports = function(deployer) {
     const votingWindow = 4000;
     const supply = 100000000;
-    deployer.deploy(StatutoryVoting, votingWindow, supply);
+    deployer.deploy(BasicVoting, votingWindow, supply);
 };
