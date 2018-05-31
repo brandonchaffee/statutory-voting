@@ -7,7 +7,6 @@ contract BlockableTransfer is StandardToken {
     mapping(address => uint[]) public currentlyVoted;
     uint256 public windowSize;
 
-    //Transfer Functionality
     function transfer(address _to, uint256 _value)
     public returns (bool) {
         require(currentlyVoted[msg.sender].length == 0);

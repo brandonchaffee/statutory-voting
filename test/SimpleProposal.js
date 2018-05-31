@@ -12,7 +12,6 @@ const targets = [
   '0xca35b7d915458ef540ade6068dfe2f44e8fa733d',
   '0xca35b7d915458ef540ade6068dfe2f44e8fa733e'
 ]
-
 const payload = [
   [targets[0]],
   [targets[1]],
