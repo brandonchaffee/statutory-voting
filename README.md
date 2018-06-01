@@ -1,7 +1,7 @@
 # Statutory Voting
 
-![Travis](https://img.shields.io/travis/brandonchaffee/statutory-voting.svg)
-
+[![Build Status](https://travis-ci.com/brandonchaffee/statutory-voting.svg?branch=master)](https://travis-ci.com/brandonchaffee/statutory-voting)
+[![Coverage Status](https://coveralls.io/repos/github/brandonchaffee/statutory-voting/badge.svg?branch=master)](https://coveralls.io/github/brandonchaffee/statutory-voting?branch=master)
 ## About
 This is a generic smart contract structure for incorporating a democratic proposal system into ERC20 contracts. The proposal system is based on statutory voting, in which the number of voting rights is proportional to the balance of the individual or entity voting on a proposal. More information can be found [here](https://google.com).
 
