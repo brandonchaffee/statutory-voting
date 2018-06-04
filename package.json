@@ -1,6 +1,6 @@
 {
   "name": "statutory-voting",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "balance based voting system for smart contracts",
   "main": "truffle-config.js",
   "scripts": {
