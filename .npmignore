@@ -13,10 +13,10 @@ config.gypi
 CVS
 npm-debug.log
 
-#tests
-test
-
 #linters
-.jscsrc
-.jshintrc
 .eslintrc*
+
+
+#soldity specific
+migrations
+scripts
