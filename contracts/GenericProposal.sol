@@ -3,6 +3,7 @@ pragma solidity ^0.4.23;
 import "./BlockableTransfer.sol";
 
 contract GenericProposal is BlockableTransfer {
+    address public approvedTarget;
     Proposal[] public proposals;
 
     struct Proposal {
@@ -58,5 +59,6 @@ contract GenericProposal is BlockableTransfer {
         require(!p.hasBeenApproved);
         approvedTarget = p.target;
         p.hasBeenApproved = true;
+        // confirmation logic goes here
     }
 }

@@ -3,7 +3,6 @@ pragma solidity ^0.4.23;
 import "openzeppelin-solidity/contracts/token/ERC20/StandardToken.sol";
 
 contract BlockableTransfer is StandardToken {
-    address public approvedTarget;
     mapping(address => uint[]) public currentlyVoted;
     uint256 public windowSize;
 
