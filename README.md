@@ -1,6 +1,6 @@
 # Statutory Voting
 
--[![Build Status](https://travis-ci.com/brandonchaffee/statutory-voting.svg?branch=master)](https://travis-ci.com/brandonchaffee/statutory-voting)
+[![Build Status](https://travis-ci.com/brandonchaffee/statutory-voting.svg?branch=master)](https://travis-ci.com/brandonchaffee/statutory-voting)
 
 ## About
 This is a generic smart contract structure for incorporating a democratic proposal system into ERC20 contracts. The proposal system is based on statutory voting, in which the number of voting rights is proportional to the balance of the individual or entity voting on a proposal. More information can be found [here](https://google.com).
