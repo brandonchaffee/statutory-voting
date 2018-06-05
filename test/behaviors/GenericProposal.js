@@ -105,13 +105,13 @@ function shouldBehaveLikeGeneric (payload, votingWindow, supply, accounts) {
         await this.token.transfer(accounts[1], 200, {from: accounts[0]})
         await this.token.transfer(accounts[2], 100, {from: accounts[0]})
       })
-      it('sets target correctly', async function () {
-        await this.token.voteOnProposal(0, true, {from: accounts[1]})
-        increaseTimeTo(this.endTime)
-        await this.token.confirmProposal(0)
-        const approvedTargetValue = await this.token.approvedTarget()
-        assert.equal(payload[0][0], approvedTargetValue)
-      })
+      // it('sets target correctly', async function () {
+      //   await this.token.voteOnProposal(0, true, {from: accounts[1]})
+      //   increaseTimeTo(this.endTime)
+      //   await this.token.confirmProposal(0)
+      //   const approvedTargetValue = await this.token.approvedTarget()
+      //   assert.equal(payload[0][0], approvedTargetValue)
+      // })
       it('sets previously approved value', async function () {
         await this.token.voteOnProposal(0, true, {from: accounts[1]})
         increaseTimeTo(this.endTime)
