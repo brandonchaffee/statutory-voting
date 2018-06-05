@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
 
-import "./BlockableTransfer.sol";
+import "../BlockableTransfer.sol";
 
 contract GenericProposal is BlockableTransfer {
     address public approvedTarget;
@@ -18,14 +18,14 @@ contract GenericProposal is BlockableTransfer {
     }
 
     function unblockTransfer() public {
-        for(uint i=0; i < currentlyVoted[msg.sender].length; i++){
+        for(uint i=0; i < inVote[msg.sender].length; i++){
             Proposal storage p = proposals[i];
             p.noTotal -= p.noVotesOf[msg.sender];
             p.noVotesOf[msg.sender] = 0;
             p.yesTotal -= p.yesVotesOf[msg.sender];
             p.yesVotesOf[msg.sender] = 0;
         }
-        delete currentlyVoted[msg.sender];
+        delete inVote[msg.sender];
     }
 
     modifier inVoteWindow(uint256 _id) {
@@ -49,7 +49,7 @@ contract GenericProposal is BlockableTransfer {
             p.noTotal += balances[msg.sender];
         }
         p.isValid = p.yesTotal > p.noTotal;
-        currentlyVoted[msg.sender].push(_id);
+        inVote[msg.sender].push(_id);
     }
 
     function confirmProposal(uint256 _id) public {
