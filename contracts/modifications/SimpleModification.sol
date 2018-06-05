@@ -9,13 +9,13 @@ contract SimpleModification is GenericModification {
     }
 
     event ModificationCreated(
-        bytes32 indexed signature,
-        bytes payload,
+        bytes4 indexed signature,
+        bytes32[] payload,
         uint256 indexed windowEnd,
         uint256 indexed id
     );
 
-    function createModification(bytes32 _sig, bytes _payload)
+    function createModification(bytes4 _sig, bytes32[] _payload)
     public returns(uint256){
         uint256 _id = modifications.length++;
         Modification storage m = modifications[_id];

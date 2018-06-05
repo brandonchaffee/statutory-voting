@@ -9,14 +9,14 @@ contract DetailedModification is GenericModification {
     }
 
     event ModificationCreated(
-        bytes32 indexed signature,
-        bytes payload,
+        bytes4 indexed signature,
+        bytes32[] payload,
         uint256 indexed windowEnd,
         uint256 indexed id,
         bytes32 detailsHash
     );
 
-    function createModification(bytes32 _sig, bytes _payload, bytes32 _hash)
+    function createModification(bytes4 _sig, bytes32[] _payload, bytes32 _hash)
     public returns(uint256){
         uint256 _id = modifications.length++;
         Modification storage m = modifications[_id];

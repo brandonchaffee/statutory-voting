@@ -6,8 +6,8 @@ contract GenericModification is BlockableTransfer {
     Modification[] public modifications;
 
     struct Modification {
-        bytes32 signature;
-        bytes payload;
+        bytes4 signature;
+        bytes32[] payload;
         uint256 windowEnd;
         bool isValid;
         uint yesTotal;
@@ -58,6 +58,32 @@ contract GenericModification is BlockableTransfer {
         require(m.isValid);
         require(!m.hasBeenApproved);
         m.hasBeenApproved = true;
-        // confirmation logic goes here
+        callModification(m);
+    }
+
+    function callModification(Modification m) internal {
+        bytes4 sig = m.signature;
+        bytes32[] memory payload = m.payload;
+        assembly {
+
+            let len := mload(payload)
+            let data := add(payload, 0x20)
+
+            let mPointer := mload(0x40)
+            mstore(mPointer,sig)
+
+            let offset := 0x04
+            for { let i := 0 } lt(i, len) {
+                i:= add(i, 1)
+                offset := add(offset, 0x20)
+                data := add(data, 0x20)
+            }{
+                mstore(add(mPointer,offset),mload(data))
+            }
+
+            let success := call(5000, address, 0, mPointer, msize, mPointer, 0x20)
+
+            mstore(0x40,add(mPointer,msize))
+        }
     }
 }
