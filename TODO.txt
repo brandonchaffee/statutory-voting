@@ -1,0 +1,2 @@
+1. Fully integrate all onlyAdmin functionality
+2. Moves constructors to test contracts

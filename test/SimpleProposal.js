@@ -3,8 +3,8 @@ import { increaseTimeTo, duration } from './helpers/increaseTime'
 import latestTime from './helpers/latestTime'
 
 const shouldBehaveLikeStandardToken = require('./behaviors/StandardToken.js')
-const shouldBehaveLikeGeneric = require('./behaviors/GenericProposal.js')
-const SProposal = artifacts.require('./SimpleProposal.sol')
+const shouldBehaveLikeProposal = require('./behaviors/GenericProposal.js')
+const SProposal = artifacts.require('./test/SimpleProposalTest.sol')
 const votingWindow = 4000
 const supply = 100000000
 const targets = [
@@ -50,7 +50,7 @@ contract('Simple Proposal', function (accounts) {
 
     })
   })
-  shouldBehaveLikeGeneric(payload, votingWindow, supply, accounts)
+  shouldBehaveLikeProposal(payload, votingWindow, supply, accounts)
   shouldBehaveLikeStandardToken(supply, accounts[0], accounts[1], accounts[2],
     accounts[3])
 })

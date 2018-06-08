@@ -3,12 +3,6 @@ pragma solidity ^0.4.23;
 import "./GenericProposal.sol";
 
 contract DetailedProposal is GenericProposal {
-
-    constructor(uint256 _window, uint256 _totalSupply) public {
-        windowSize = _window;
-        balances[msg.sender] = _totalSupply;
-    }
-
     event ProposalCreated(
         address indexed target,
         uint256 indexed windowEnd,
