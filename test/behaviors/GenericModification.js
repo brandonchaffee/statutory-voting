@@ -2,8 +2,8 @@ import assertRevert from '../helpers/assertRevert'
 import { increaseTimeTo, duration } from '../helpers/increaseTime'
 import latestTime from '../helpers/latestTime'
 
-function shouldBehaveLikeModification (payload, votingWindow, supply, accounts) {
-  describe('Generic Proposal', function () {
+function modificationBehavior (payload, votingWindow, supply, accounts) {
+  describe('Generic Modification', function () {
     beforeEach(async function () {
       await this.token.createModification(...payload[0])
     })
@@ -20,31 +20,31 @@ function shouldBehaveLikeModification (payload, votingWindow, supply, accounts) 
 
         const balanceA = await this.token.balanceOf(accounts[1])
         const balanceB = await this.token.balanceOf(accounts[2])
-        const ProposalStruct = await this.token.proposals(0)
+        const ModStruct = await this.token.modifications(0)
 
-        assert.equal(balanceA.toNumber(), ProposalStruct[3].toNumber())
-        assert.equal(balanceB.toNumber(), ProposalStruct[4].toNumber())
+        assert.equal(balanceA.toNumber(), ModStruct[3].toNumber())
+        assert.equal(balanceB.toNumber(), ModStruct[4].toNumber())
       })
       it('modifies validity with majority', async function () {
         await this.token.voteOnModification(0, true, {from: accounts[1]})
-        let ProposalStruct = await this.token.proposals(0)
-        assert(ProposalStruct[2])
+        let ModStruct = await this.token.modifications(0)
+        assert(ModStruct[2])
 
         await this.token.voteOnModification(0, false, {from: accounts[2]})
         await this.token.voteOnModification(0, false, {from: accounts[3]})
-        ProposalStruct = await this.token.proposals(0)
-        assert(!ProposalStruct[2])
+        ModStruct = await this.token.modifications(0)
+        assert(!ModStruct[2])
       })
       it('decrements prior vote on sign switch', async function () {
         const balance = await this.token.balanceOf(accounts[1])
         await this.token.voteOnModification(0, true, {from: accounts[1]})
-        let ProposalStruct = await this.token.proposals(0)
-        assert.equal(balance.toNumber(), ProposalStruct[3].toNumber())
+        let ModStruct = await this.token.modifications(0)
+        assert.equal(balance.toNumber(), ModStruct[3].toNumber())
 
         await this.token.voteOnModification(0, false, {from: accounts[1]})
-        ProposalStruct = await this.token.proposals(0)
-        assert.equal(balance.toNumber(), ProposalStruct[4].toNumber())
-        assert.equal(ProposalStruct[3].toNumber(), 0)
+        ModStruct = await this.token.modifications(0)
+        assert.equal(balance.toNumber(), ModStruct[4].toNumber())
+        assert.equal(ModStruct[3].toNumber(), 0)
       })
       it('reverts outside of voting winodw', async function () {
         await increaseTimeTo(this.endTime)
@@ -75,14 +75,14 @@ function shouldBehaveLikeModification (payload, votingWindow, supply, accounts) 
         await this.token.createModification(...payload[1])
         await this.token.voteOnModification(0, true, {from: accounts[1]})
         await this.token.voteOnModification(1, false, {from: accounts[1]})
-        let ProposalOne = await this.token.proposals(0)
-        let ProposalTwo = await this.token.proposals(1)
+        let ProposalOne = await this.token.modifications(0)
+        let ProposalTwo = await this.token.modifications(1)
         assert.equal(ProposalOne[3].toNumber(), balance)
         assert.equal(ProposalTwo[4].toNumber(), balance)
 
         await this.token.unblockTransfer({from: accounts[1]})
-        ProposalOne = await this.token.proposals(0)
-        ProposalTwo = await this.token.proposals(1)
+        ProposalOne = await this.token.modifications(0)
+        ProposalTwo = await this.token.modifications(1)
         assert.equal(ProposalOne[3].toNumber(), 0)
         assert.equal(ProposalTwo[4].toNumber(), 0)
       })
@@ -109,7 +109,7 @@ function shouldBehaveLikeModification (payload, votingWindow, supply, accounts) 
         await this.token.voteOnModification(0, true, {from: accounts[1]})
         increaseTimeTo(this.endTime)
         await this.token.confirmModifications(0)
-        const Proposal = await this.token.proposals(0)
+        const Proposal = await this.token.modifications(0)
         assert(Proposal[5])
       })
       it('reverts until outside voting window', async function () {
@@ -148,4 +148,4 @@ function shouldBehaveLikeModification (payload, votingWindow, supply, accounts) 
   })
 }
 
-module.exports = shouldBehaveLikeModification
+module.exports = modificationBehavior

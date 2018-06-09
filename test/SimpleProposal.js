@@ -2,8 +2,8 @@ import { advanceBlock } from './helpers/advanceToBlock'
 import { increaseTimeTo, duration } from './helpers/increaseTime'
 import latestTime from './helpers/latestTime'
 
-const shouldBehaveLikeStandardToken = require('./behaviors/StandardToken.js')
-const shouldBehaveLikeProposal = require('./behaviors/GenericProposal.js')
+const standardTokennBehavior = require('./behaviors/StandardToken.js')
+const genericProposalBehavior = require('./behaviors/GenericProposal.js')
 const SProposal = artifacts.require('./test/SimpleProposalTest.sol')
 const votingWindow = 4000
 const supply = 100000000
@@ -50,7 +50,7 @@ contract('Simple Proposal', function (accounts) {
 
     })
   })
-  shouldBehaveLikeProposal(payload, votingWindow, supply, accounts)
-  shouldBehaveLikeStandardToken(supply, accounts[0], accounts[1], accounts[2],
+  genericProposalBehavior(payload, votingWindow, supply, accounts)
+  standardTokennBehavior(supply, accounts[0], accounts[1], accounts[2],
     accounts[3])
 })

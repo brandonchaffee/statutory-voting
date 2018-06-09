@@ -2,7 +2,7 @@ import assertRevert from '../helpers/assertRevert'
 import { increaseTimeTo, duration } from '../helpers/increaseTime'
 import latestTime from '../helpers/latestTime'
 
-function shouldBehaveLikeProposal (payload, votingWindow, supply, accounts) {
+function genericProposalBehavior (payload, votingWindow, supply, accounts) {
   describe('Generic Proposal', function () {
     beforeEach(async function () {
       await this.token.createProposal(...payload[0])
@@ -148,4 +148,4 @@ function shouldBehaveLikeProposal (payload, votingWindow, supply, accounts) {
   })
 }
 
-module.exports = shouldBehaveLikeProposal
+module.exports = genericProposalBehavior

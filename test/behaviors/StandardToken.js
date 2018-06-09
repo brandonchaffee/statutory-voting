@@ -1,6 +1,6 @@
 import assertRevert from '../helpers/assertRevert'
 
-function shouldBehaveLikeStandardToken (
+function standardTokennBehavior (
   supply, owner, recipient, spender, nonspender
 ) {
   describe('Balance Transfer', function () {
@@ -87,4 +87,4 @@ function shouldBehaveLikeStandardToken (
   })
 }
 
-module.exports = shouldBehaveLikeStandardToken
+module.exports = standardTokennBehavior
