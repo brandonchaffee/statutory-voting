@@ -58,32 +58,27 @@ contract GenericModification is BlockableTransfer {
         require(m.isValid);
         require(!m.hasBeenApproved);
         m.hasBeenApproved = true;
-        callModification(m);
+        callModification(m.signature, m.payload);
     }
 
-    function callModification(Modification m) internal {
-        bytes4 sig = m.signature;
-        bytes32[] memory payload = m.payload;
+    function callModification(bytes4 sig, bytes32[] payload) internal {
         assembly {
-
-            let len := mload(payload)
+            let offset := 0x04
+            let len := add(offset, mul(mload(payload), 0x20))
             let data := add(payload, 0x20)
 
-            let mPointer := mload(0x40)
-            mstore(mPointer,sig)
+            let x := mload(0x40)
+            mstore(x,sig)
 
-            let offset := 0x04
-            for { let i := 0 } lt(i, len) {
-                i:= add(i, 1)
+            for {} lt(offset, len) {
                 offset := add(offset, 0x20)
                 data := add(data, 0x20)
             }{
-                mstore(add(mPointer,offset),mload(data))
+                mstore(add(x,offset),mload(data))
             }
 
-            let success := call(5000, address, 0, mPointer, msize, mPointer, 0x20)
-
-            mstore(0x40,add(mPointer,msize))
+            let success := call(gas, address, 0, x, msize, x, 0x20)
+            mstore(0x40,add(x,msize))
         }
     }
 }

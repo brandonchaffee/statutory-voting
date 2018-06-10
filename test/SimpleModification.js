@@ -8,9 +8,9 @@ const SMod = artifacts.require('./test/SimpleModificiatonTest.sol')
 const votingWindow = 4000
 const supply = 100000000
 const targets = [
-  ['0xca35b7da', ['0x04', '0x05']],
-  ['0xca35b7db', ['0x04', '0x05']],
-  ['0xca35b7dc', ['0x04', '0x05']]
+  [web3.sha3('add(uint256,uint256)').slice(0, 10), ['0x04', '0x05']],
+  [web3.sha3('add(uint256,uint256)').slice(0, 10), ['0x04', '0x05']],
+  [web3.sha3('add(uint256,uint256)').slice(0, 10), ['0x04', '0x05']]
 ]
 
 const payload = [targets[0], targets[1], targets[2]]
@@ -23,7 +23,7 @@ contract('Simple Modification', function (accounts) {
     this.token = await SMod.new(votingWindow, supply, {from: accounts[0]})
   })
   describe('Creation', function () {
-    it('increments proposal ids', async function () {
+    it('increments modification ids', async function () {
       for (var i = 0; i < targets.length; i++) {
         await this.token.createModification(...payload[i])
         let ModStruct = await this.token.modifications(i)
@@ -44,6 +44,14 @@ contract('Simple Modification', function (accounts) {
       assert.equal(ModStruct[1].toNumber(), votingWindow + latestTime())
     })
   })
+  // describe('Modification Calling', function () {
+  //   it('delegates to proper function', async function () {
+  //
+  //   })
+  //   it('changes state correctly', async function () {
+  //
+  //   })
+  // })
   modificationBehavior(payload, votingWindow, supply, accounts)
   standardTokennBehavior(supply, accounts[0], accounts[1], accounts[2],
     accounts[3])
