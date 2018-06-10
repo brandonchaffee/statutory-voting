@@ -1,5 +1,6 @@
 require('babel-polyfill')
 require('babel-register')
+require('web3-utils')
 
 module.exports = {
   networks: {

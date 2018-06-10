@@ -2,12 +2,11 @@ import assertRevert from '../helpers/assertRevert'
 import { increaseTimeTo, duration } from '../helpers/increaseTime'
 import latestTime from '../helpers/latestTime'
 
-function modificationBehavior (payload, votingWindow, supply, accounts) {
+function modificationBehavior (payloads, votingWindow, supply, accounts) {
   describe('Generic Modification', function () {
     beforeEach(async function () {
-      await this.token.createModification(...payload[0])
+      await this.token.createModification(...this.mods[0])
     })
-
     describe('Voting', function () {
       beforeEach(async function () {
         await this.token.transfer(accounts[1], 450, {from: accounts[0]})
@@ -72,7 +71,7 @@ function modificationBehavior (payload, votingWindow, supply, accounts) {
       it('decrements votes when unblocked', async function () {
         const balance = await this.token.balanceOf(accounts[1])
 
-        await this.token.createModification(...payload[1])
+        await this.token.createModification(...this.mods[1])
         await this.token.voteOnModification(0, true, {from: accounts[1]})
         await this.token.voteOnModification(1, false, {from: accounts[1]})
         let ProposalOne = await this.token.modifications(0)
@@ -101,7 +100,7 @@ function modificationBehavior (payload, votingWindow, supply, accounts) {
     })
     describe('Confirmation', function () {
       beforeEach(async function () {
-        await this.token.createModification(...payload[1])
+        await this.token.createModification(...this.mods[1])
         await this.token.transfer(accounts[1], 200, {from: accounts[0]})
         await this.token.transfer(accounts[2], 100, {from: accounts[0]})
       })
@@ -138,11 +137,45 @@ function modificationBehavior (payload, votingWindow, supply, accounts) {
         await this.token.confirmModifications(0)
         await this.token.unblockTransfer({from: accounts[1]})
 
-        await this.token.createModification(...payload[2])
+        await this.token.createModification(...this.mods[2])
         await this.token.voteOnModification(2, true, {from: accounts[1]})
         increaseTimeTo(latestTime() + duration.days(1))
         await this.token.confirmModifications(2)
         await assertRevert(this.token.confirmModifications(0))
+      })
+    })
+    describe('Modifying', function () {
+      beforeEach(async function () {
+        await this.token.transfer(accounts[1], 200, {from: accounts[0]})
+        await this.token.transfer(accounts[2], 100, {from: accounts[0]})
+      })
+      it('changes state correctly', async function () {
+        const preBalance = await this.token.balanceOf(accounts[1])
+        await this.token.voteOnModification(0, true, {from: accounts[1]})
+        increaseTimeTo(this.endTime)
+        await this.token.confirmModifications(0)
+        const postBalance = await this.token.balanceOf(accounts[1])
+        assert.equal(preBalance.toNumber() + parseInt(payloads[0]),
+          postBalance.toNumber())
+      })
+      it('delegates to proper function', async function () {
+        await this.token.createModification(...this.mods[1])
+        await this.token.createModification(...this.mods[2])
+        const initialSupply = await this.token.totalSupply()
+
+        await this.token.voteOnModification(1, true, {from: accounts[1]})
+        await this.token.voteOnModification(2, true, {from: accounts[1]})
+        increaseTimeTo(this.endTime)
+
+        await this.token.confirmModifications(1)
+        const midSupply = await this.token.totalSupply()
+        assert.equal(midSupply.toNumber(), initialSupply.toNumber() +
+          parseInt(payloads[1]))
+
+        await this.token.confirmModifications(2)
+        const endSupply = await this.token.totalSupply()
+        assert.equal(endSupply.toNumber(), midSupply.toNumber() -
+          parseInt(payloads[2]))
       })
     })
   })
