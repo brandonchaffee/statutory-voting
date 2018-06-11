@@ -45,6 +45,18 @@ function modificationBehavior (payloads, votingWindow, supply, accounts) {
         assert.equal(balance.toNumber(), ModStruct[4].toNumber())
         assert.equal(ModStruct[3].toNumber(), 0)
       })
+      it('does not double count vote', async function () {
+        const balance = await this.token.balanceOf(accounts[1])
+        await this.token.voteOnModification(0, true, {from: accounts[1]})
+        let ModStruct = await this.token.modifications(0)
+        assert.equal(balance.toNumber(), ModStruct[3].toNumber())
+        await this.token.voteOnModification(0, true, {from: accounts[1]})
+        ModStruct = await this.token.modifications(0)
+        assert.equal(balance.toNumber(), ModStruct[3].toNumber())
+        await this.token.voteOnModification(0, true, {from: accounts[1]})
+        ModStruct = await this.token.modifications(0)
+        assert.equal(balance.toNumber(), ModStruct[3].toNumber())
+      })
       it('reverts outside of voting winodw', async function () {
         await increaseTimeTo(this.endTime)
         await assertRevert(this.token.voteOnModification(0, true,

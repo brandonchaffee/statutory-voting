@@ -46,6 +46,18 @@ function genericProposalBehavior (payload, votingWindow, supply, accounts) {
         assert.equal(balance.toNumber(), ProposalStruct[4].toNumber())
         assert.equal(ProposalStruct[3].toNumber(), 0)
       })
+      it('does not double count vote', async function () {
+        const balance = await this.token.balanceOf(accounts[1])
+        await this.token.voteOnProposal(0, true, {from: accounts[1]})
+        let ProposalStruct = await this.token.proposals(0)
+        assert.equal(balance.toNumber(), ProposalStruct[3].toNumber())
+        await this.token.voteOnProposal(0, true, {from: accounts[1]})
+        ProposalStruct = await this.token.proposals(0)
+        assert.equal(balance.toNumber(), ProposalStruct[3].toNumber())
+        await this.token.voteOnProposal(0, true, {from: accounts[1]})
+        ProposalStruct = await this.token.proposals(0)
+        assert.equal(balance.toNumber(), ProposalStruct[3].toNumber())
+      })
       it('reverts outside of voting winodw', async function () {
         await increaseTimeTo(this.endTime)
         await assertRevert(this.token.voteOnProposal(0, true,

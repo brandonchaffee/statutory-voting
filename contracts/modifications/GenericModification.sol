@@ -38,11 +38,13 @@ contract GenericModification is BlockableTransfer {
     public {
         Modification storage m = modifications[_id];
         if(_approve){
+            m.yesTotal -= m.yesVotesOf[msg.sender];
             m.noTotal -= m.noVotesOf[msg.sender];
             m.noVotesOf[msg.sender] = 0;
             m.yesVotesOf[msg.sender] = balances[msg.sender];
             m.yesTotal += balances[msg.sender];
         } else {
+            m.noTotal -= m.noVotesOf[msg.sender];
             m.yesTotal -= m.yesVotesOf[msg.sender];
             m.yesVotesOf[msg.sender] = 0;
             m.noVotesOf[msg.sender] = balances[msg.sender];
