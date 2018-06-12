@@ -1,11 +1,18 @@
 pragma solidity ^0.4.23;
 
-import "../modifications/DetailedModification.sol";
+import "../implementations/WindowedRatio.sol";
 
-contract DetailedModificiatonTest is DetailedModification {
-    constructor(uint256 _window, uint256 _totalSupply) public {
-        windowSize = _window;
-        totalSupply_ = _totalSupply;
+contract WindowedRatioTest is WindowedRatio {
+    constructor(
+        uint256 _totalSupply,
+        uint256 _window,
+        uint256 _numerator,
+        uint256 _denominator
+    ) public {
+            totalSupply_ = _totalSupply;
+            windowSize = _window;
+            ratioNumerator = _numerator;
+            ratioDenominator = _denominator;
         balances[msg.sender] = _totalSupply;
     }
 

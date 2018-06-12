@@ -1,6 +1,6 @@
 pragma solidity ^0.4.23;
 
-import "../BlockableTransfer.sol";
+import "./BlockableTransfer.sol";
 
 contract GenericModification is BlockableTransfer {
     Modification[] public modifications;
@@ -17,6 +17,25 @@ contract GenericModification is BlockableTransfer {
         bool hasBeenApproved;
     }
 
+    event ModificationCreated(
+        bytes4 indexed signature,
+        bytes32[] payload,
+        uint256 indexed windowEnd,
+        uint256 indexed id,
+        bytes32 detailsHash
+    );
+
+    function createModification(bytes4 _sig, bytes32[] _payload, bytes32 _hash)
+    public returns(uint256){
+        uint256 _id = modifications.length++;
+        Modification storage m = modifications[_id];
+        m.signature = _sig;
+        m.payload = _payload;
+        m.windowEnd = now + windowSize;
+        emit ModificationCreated(_sig, _payload, m.windowEnd, _id, _hash);
+        return _id;
+    }
+
     function unblockTransfer() public {
         for(uint i=0; i < inVote[msg.sender].length; i++){
             Modification storage m = modifications[i];
@@ -28,14 +47,7 @@ contract GenericModification is BlockableTransfer {
         delete inVote[msg.sender];
     }
 
-    modifier inVoteWindow(uint256 _id) {
-        require(now < modifications[_id].windowEnd);
-        _;
-    }
-
-    function voteOnModification(uint256 _id, bool _approve)
-        inVoteWindow(_id)
-    public {
+    function accountVotes(uint256 _id, bool _approve) public {
         Modification storage m = modifications[_id];
         if(_approve){
             m.yesTotal -= m.yesVotesOf[msg.sender];
@@ -50,13 +62,11 @@ contract GenericModification is BlockableTransfer {
             m.noVotesOf[msg.sender] = balances[msg.sender];
             m.noTotal += balances[msg.sender];
         }
-        m.isValid = m.yesTotal > m.noTotal;
-        inVote[msg.sender].push(_id);
     }
 
-    function confirmModifications(uint256 _id) public {
+    function confirmModification(uint256 _id) public {
         Modification storage m = modifications[_id];
-        require(now > m.windowEnd);
+        require(now >= m.windowEnd);
         require(m.isValid);
         require(!m.hasBeenApproved);
         m.hasBeenApproved = true;

@@ -1,9 +1,9 @@
 pragma solidity ^0.4.23;
 
-import "../modifications/SimpleModification.sol";
+import "../implementations/WindowedMajority.sol";
 
-contract SimpleModificiatonTest is SimpleModification {
-    constructor(uint256 _window, uint256 _totalSupply) public {
+contract WindowedMajorityTest is WindowedMajority {
+    constructor(uint256 _totalSupply, uint256 _window) public {
         windowSize = _window;
         totalSupply_ = _totalSupply;
         balances[msg.sender] = _totalSupply;

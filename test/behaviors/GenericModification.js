@@ -119,41 +119,41 @@ function modificationBehavior (payloads, votingWindow, supply, accounts) {
       it('sets previously approved value', async function () {
         await this.token.voteOnModification(0, true, {from: accounts[1]})
         increaseTimeTo(this.endTime)
-        await this.token.confirmModifications(0)
+        await this.token.confirmModification(0)
         const Proposal = await this.token.modifications(0)
         assert(Proposal[5])
       })
       it('reverts until outside voting window', async function () {
         await this.token.voteOnModification(0, true, {from: accounts[1]})
-        await assertRevert(this.token.confirmModifications(0))
+        await assertRevert(this.token.confirmModification(0))
         increaseTimeTo(this.midTime)
-        await assertRevert(this.token.confirmModifications(0))
+        await assertRevert(this.token.confirmModification(0))
         increaseTimeTo(this.endTime)
-        await this.token.confirmModifications(0)
+        await this.token.confirmModification(0)
       })
       it('revets if proposal is invalid', async function () {
         await this.token.voteOnModification(0, true, {from: accounts[2]})
         await this.token.voteOnModification(0, false, {from: accounts[1]})
         increaseTimeTo(this.endTime)
-        await assertRevert(this.token.confirmModifications(0))
+        await assertRevert(this.token.confirmModification(0))
       })
       it('reverts on reconfirmation', async function () {
         await this.token.voteOnModification(0, true, {from: accounts[1]})
         increaseTimeTo(this.endTime)
-        await this.token.confirmModifications(0)
-        await assertRevert(this.token.confirmModifications(0))
+        await this.token.confirmModification(0)
+        await assertRevert(this.token.confirmModification(0))
       })
       it('old approved proposal cannot be reconfirmed', async function () {
         await this.token.voteOnModification(0, true, {from: accounts[1]})
         increaseTimeTo(latestTime() + duration.days(1))
-        await this.token.confirmModifications(0)
+        await this.token.confirmModification(0)
         await this.token.unblockTransfer({from: accounts[1]})
 
         await this.token.createModification(...this.mods[2])
         await this.token.voteOnModification(2, true, {from: accounts[1]})
         increaseTimeTo(latestTime() + duration.days(1))
-        await this.token.confirmModifications(2)
-        await assertRevert(this.token.confirmModifications(0))
+        await this.token.confirmModification(2)
+        await assertRevert(this.token.confirmModification(0))
       })
     })
     describe('Modifying', function () {
@@ -165,7 +165,7 @@ function modificationBehavior (payloads, votingWindow, supply, accounts) {
         const preBalance = await this.token.balanceOf(accounts[1])
         await this.token.voteOnModification(0, true, {from: accounts[1]})
         increaseTimeTo(this.endTime)
-        await this.token.confirmModifications(0)
+        await this.token.confirmModification(0)
         const postBalance = await this.token.balanceOf(accounts[1])
         assert.equal(preBalance.toNumber() + parseInt(payloads[0]),
           postBalance.toNumber())
@@ -179,12 +179,12 @@ function modificationBehavior (payloads, votingWindow, supply, accounts) {
         await this.token.voteOnModification(2, true, {from: accounts[1]})
         increaseTimeTo(this.endTime)
 
-        await this.token.confirmModifications(1)
+        await this.token.confirmModification(1)
         const midSupply = await this.token.totalSupply()
         assert.equal(midSupply.toNumber(), initialSupply.toNumber() +
           parseInt(payloads[1]))
 
-        await this.token.confirmModifications(2)
+        await this.token.confirmModification(2)
         const endSupply = await this.token.totalSupply()
         assert.equal(endSupply.toNumber(), midSupply.toNumber() -
           parseInt(payloads[2]))
